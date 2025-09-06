@@ -249,132 +249,162 @@
     </template>
     
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const preloader = document.getElementById('preloader');
-        const container = document.querySelector('.container');
-        const visionForm = document.getElementById('visionForm');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const cameraBtn = document.getElementById('cameraBtn');
-        const fileInput = document.getElementById('fileInput');
-        const photoPreview = document.getElementById('photoPreview');
-        const photoPreviewPlaceholder = document.getElementById('photoPreviewPlaceholder');
-        const submitButton = visionForm.querySelector('button[type="submit"]');
-        let capturedImageData = null;
+document.addEventListener('DOMContentLoaded', () => {
+    const preloader = document.getElementById('preloader');
+    const container = document.querySelector('.container');
+    const visionForm = document.getElementById('visionForm');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const cameraBtn = document.getElementById('cameraBtn');
+    const fileInput = document.getElementById('fileInput');
+    const photoPreview = document.getElementById('photoPreview');
+    const photoPreviewPlaceholder = document.getElementById('photoPreviewPlaceholder');
+    const submitButton = visionForm.querySelector('button[type="submit"]');
+    let capturedImageData = null;
 
-        // CORRECTED ANSWER MAP
-        const answerMap = new Map([
-            ['To achieve academic excellence.', 'Excellence'], ['To develop practical skills.', 'Skills'], ['To gain in-depth knowledge of my field.', 'Knowledge'], ['To complete my studies with good grades.', 'Grades'],
-            ['Consistent sleep and a healthy diet.', 'Wellness'], ['Regular physical activity and sports.', 'Activity'], ['Mindfulness and stress management.', 'Mindfulness'], ['Develop Good Habits', 'Good Habits'],
-            ['To respect my parents and be helpful.', 'Respect'], ['To spend quality time with them.', 'Quality Time'], ['To be a supportive family member.', 'Support'], ['To balance family and study time.', 'Balance'],
-            ['Creative arts or writing.', 'Creativity'], ['Sports or physical activities.', 'Sports'], ['Technical skills related to my field.', 'Tech Skills'], ['Learning new languages or subjects.', 'Learning'],
-            ['Be thankful for my mentors and friends.', 'Thankfulness'], ['Keep a gratitude journal.', 'Journaling'], ['Express thanks to those who help me.', 'Appreciation'], ['Show appreciation for small things.', 'Awareness'],
-            ['Develop a positive and peaceful mindset.', 'Positivity'], ['Practice regular meditation or prayer.', 'Meditation'], ['Visit Holy Place', 'Pilgrimage'], ['Read Holy Book', 'Scripture Reading']
-        ]);
+    const answerMap = new Map([
+        ['To achieve academic excellence.', 'Excellence'], ['To develop practical skills.', 'Skills'], ['To gain in-depth knowledge of my field.', 'Knowledge'], ['To complete my studies with good grades.', 'Grades'],
+        ['Consistent sleep and a healthy diet.', 'Wellness'], ['Regular physical activity and sports.', 'Activity'], ['Mindfulness and stress management.', 'Mindfulness'], ['Develop Good Habits', 'Good Habits'],
+        ['To respect my parents and be helpful.', 'Respect'], ['To spend quality time with them.', 'Quality Time'], ['To be a supportive family member.', 'Support'], ['To balance family and study time.', 'Balance'],
+        ['Creative arts or writing.', 'Creativity'], ['Sports or physical activities.', 'Sports'], ['Technical skills related to my field.', 'Tech Skills'], ['Learning new languages or subjects.', 'Learning'],
+        ['Be thankful for my mentors and friends.', 'Thankfulness'], ['Keep a gratitude journal.', 'Journaling'], ['Express thanks to those who help me.', 'Appreciation'], ['Show appreciation for small things.', 'Awareness'],
+        ['Develop a positive and peaceful mindset.', 'Positivity'], ['Practice regular meditation or prayer.', 'Meditation'], ['Visit Holy Place', 'Pilgrimage'], ['Read Holy Book', 'Scripture Reading']
+    ]);
 
-        emailjs.init({ publicKey: "1PZYtv-MWEaTrQnt-", });
+    emailjs.init({ publicKey: "1PZYtv-MWEaTrQnt-", });
 
-        setTimeout(() => {
-            preloader.classList.add('fade-out');
-            container.classList.add('show');
-        }, 2500);
+    setTimeout(() => {
+        preloader.classList.add('fade-out');
+        container.classList.add('show');
+    }, 2500);
 
-        const handleFile = (file) => {
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => { capturedImageData = e.target.result; photoPreview.src = capturedImageData; photoPreview.classList.remove('hidden'); photoPreviewPlaceholder.classList.add('hidden'); };
-                reader.readAsDataURL(file);
-            }
-        };
-        uploadBtn.addEventListener('click', () => { fileInput.removeAttribute('capture'); fileInput.click(); });
-        cameraBtn.addEventListener('click', () => { fileInput.setAttribute('capture', 'user'); fileInput.click(); });
-        fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+    const handleFile = (file) => {
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => { capturedImageData = e.target.result; photoPreview.src = capturedImageData; photoPreview.classList.remove('hidden'); photoPreviewPlaceholder.classList.add('hidden'); };
+            reader.readAsDataURL(file);
+        }
+    };
+    uploadBtn.addEventListener('click', () => { fileInput.removeAttribute('capture'); fileInput.click(); });
+    cameraBtn.addEventListener('click', () => { fileInput.setAttribute('capture', 'user'); fileInput.click(); });
+    fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+    
+    // --- Helper function to save to Google Drive ---
+    async function saveToGoogleDrive(imageData, fileName) {
+        const webAppUrl = 'https://script.google.com/a/macros/ppsu.ac.in/s/AKfycbyjXmOLhNbuiiglmT6oa0SKYN8d3QEVSbMQHiQWVWDAUkEeo75UxDZRfBRRWkjRNxLBsg/exec';
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                body: JSON.stringify({ image: imageData, filename: fileName }),
+            });
+            console.log('Successfully sent image data to Google Drive script.');
+        } catch (error) {
+            console.error('Error sending image to Google Drive:', error);
+        }
+    }
 
-        visionForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
+    visionForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        
+        const formData = new FormData(visionForm);
+        const data = Object.fromEntries(formData.entries());
+        
+        const answeredQuestions = Array.from(formData.keys()).filter(key => key.startsWith('q')).length;
+        if (!capturedImageData || answeredQuestions < 6) {
+            alert('Please upload a photo and answer all 6 questions.');
+            return;
+        }
+        
+        submitButton.disabled = true;
+        submitButton.innerText = 'Processing... Please Wait';
+
+        const shortAnswers = {};
+        for(let i = 1; i <= 6; i++) {
+            const longAnswer = data[`q${i}`];
+            shortAnswers[`q${i}`] = answerMap.get(longAnswer) || 'N/A';
+        }
+
+        const template = document.getElementById('visionCardTemplate');
+        const visionCardNode = template.content.cloneNode(true).firstElementChild;
+        
+        visionCardNode.querySelector('#passportName').innerText = data.name;
+        visionCardNode.querySelector('#passportEnrollment').innerText = data.enrollment;
+        visionCardNode.querySelector('#passportPhoto').src = capturedImageData;
+        for(let i = 1; i <= 6; i++) {
+            visionCardNode.querySelector(`#cardQ${i}`).innerText = shortAnswers[`q${i}`];
+        }
+        
+        document.body.appendChild(visionCardNode);
+
+        try {
+            const CLOUDINARY_CLOUD_NAME = "duxyrk6vz";
+            const CLOUDINARY_UPLOAD_PRESET = "ignite_preset";
+
+            const canvas = await html2canvas(visionCardNode, { scale: 2, useCORS: true });
+            document.body.removeChild(visionCardNode);
             
-            const formData = new FormData(visionForm);
-            const data = Object.fromEntries(formData.entries());
-            
-            const answeredQuestions = Array.from(formData.keys()).filter(key => key.startsWith('q')).length;
-            if (!capturedImageData || answeredQuestions < 6) {
-                alert('Please upload a photo and answer all 6 questions.'); return;
-            }
-            
-            submitButton.disabled = true;
-            submitButton.innerText = 'Creating, Uploading & Sending...';
+            // 1. Generate image data and filename ONCE
+            const visionIdImageDataURL = canvas.toDataURL('image/jpeg', 0.8);
+            const visionIdFileName = `VisionID_${data.name.replace(/\s+/g, '_') || 'user'}.jpeg`;
 
-            const shortAnswers = {};
-            for(let i = 1; i <= 6; i++){ const longAnswer = data[`q${i}`]; shortAnswers[`q${i}`] = answerMap.get(longAnswer) || 'N/A'; }
+            // 2. Send to Google Drive (this runs in the background)
+            saveToGoogleDrive(visionIdImageDataURL, visionIdFileName);
 
-            const template = document.getElementById('visionCardTemplate');
-            const visionCardNode = template.content.cloneNode(true).firstElementChild;
-            
-            visionCardNode.querySelector('#passportName').innerText = data.name;
-            visionCardNode.querySelector('#passportEnrollment').innerText = data.enrollment;
-            visionCardNode.querySelector('#passportPhoto').src = capturedImageData;
-            for(let i = 1; i <= 6; i++) { visionCardNode.querySelector(`#cardQ${i}`).innerText = shortAnswers[`q${i}`]; }
-            
-            document.body.appendChild(visionCardNode);
+            // 3. Process the rest using the generated canvas
+            canvas.toBlob(async (blob) => {
+                // Action A: Trigger automatic download for the user
+                const downloadUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = downloadUrl;
+                a.download = visionIdFileName; // Use the consistent filename
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(downloadUrl);
+                document.body.removeChild(a);
 
-            try {
-                // CORRECTED CLOUDINARY DETAILS
-                const CLOUDINARY_CLOUD_NAME = "duxyrk6vz";
-                const CLOUDINARY_UPLOAD_PRESET = "ignite_preset";
+                // Action B: Upload to Cloudinary and send the email
+                const cloudinaryFormData = new FormData();
+                cloudinaryFormData.append('file', blob);
+                cloudinaryFormData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
-                const canvas = await html2canvas(visionCardNode, { scale: 2, useCORS: true });
-                document.body.removeChild(visionCardNode);
+                const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+                const cloudinaryResponse = await fetch(cloudinaryUrl, {
+                    method: 'POST',
+                    body: cloudinaryFormData,
+                });
 
-                canvas.toBlob(async (blob) => {
-                    const formData = new FormData();
-                    formData.append('file', blob);
-                    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-
-                    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
-
-                    const cloudinaryResponse = await fetch(cloudinaryUrl, {
-                        method: 'POST',
-                        body: formData,
-                    });
-
-                    if (!cloudinaryResponse.ok) {
-                        const errorDetails = await cloudinaryResponse.json();
-                        console.error('Cloudinary upload failed:', errorDetails);
-                        throw new Error('Failed to upload image to Cloudinary.');
-                    }
-
-                    const cloudinaryResult = await cloudinaryResponse.json();
-                    const imageUrl = cloudinaryResult.secure_url;
-
-                    const templateParams = {
-                        name: data.name,
-                        to_email: data.email,
-                        vision_id_url: imageUrl,
-                    };
-
-                    await emailjs.send('service_oxexzxo', 'template_o5imkvs', templateParams);
-                    
-                    alert(`✅ Success! A link to your Vision ID has been sent to ${data.email}.`);
-
-                    const visionData = {
-                        name: data.name, enrollment: data.enrollment, photo: capturedImageData, answers: shortAnswers
-                    };
-
-                    sessionStorage.setItem('visionData', JSON.stringify(visionData));
-                    window.location.href = 'template.html';
-
-                }, 'image/jpeg', 0.8);
-
-            } catch (error) {
-                console.error('FAILED...', error);
-                alert(`❌ Error: Could not process your Vision ID. Please check the console.`);
-                submitButton.disabled = false;
-                submitButton.innerText = 'Create & Email My Vision ID';
-                if (document.body.contains(visionCardNode)) {
-                    document.body.removeChild(visionCardNode);
+                if (!cloudinaryResponse.ok) {
+                    throw new Error('Failed to upload image to Cloudinary.');
                 }
-            }
-        });
+
+                const cloudinaryResult = await cloudinaryResponse.json();
+                const imageUrl = cloudinaryResult.secure_url;
+
+                const templateParams = {
+                    name: data.name,
+                    to_email: data.email,
+                    vision_id_url: imageUrl,
+                };
+
+                await emailjs.send('service_oxexzxo', 'template_o5imkvs', templateParams);
+                
+                alert(`✅ Success! Your Vision ID has been sent to ${data.email} and downloaded.`);
+
+                sessionStorage.setItem('visionData', JSON.stringify({
+                    name: data.name, enrollment: data.enrollment, photo: capturedImageData, answers: shortAnswers
+                }));
+                window.location.href = 'template.html';
+
+            }, 'image/jpeg', 0.8);
+
+        } catch (error) {
+            console.error('FAILED...', error);
+            alert(`❌ Error: Could not process your Vision ID. Please check the console.`);
+            submitButton.disabled = false;
+            submitButton.innerText = 'Create & Email My Vision ID';
+        }
     });
-    </script>
+});
+</script>
 </body>
 </html>
