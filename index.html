@@ -190,7 +190,7 @@
                         <input type="radio" id="q2a" name="q2" value="Consistent sleep and a healthy diet." required><label for="q2a">Sleep & Diet</label>
                         <input type="radio" id="q2b" name="q2" value="Regular physical activity and sports." required><label for="q2b">Physical Activity</label>
                         <input type="radio" id="q2c" name="q2" value="Mindfulness and stress management." required><label for="q2c">Mindfulness</label>
-                        <input type="radio" id="q2d" name="q2" value="Develop Good Habits" required><label for="q2d">Goog Habits</label>
+                        <input type="radio" id="q2d" name="q2" value="Develop Good Habits" required><label for="q2d">Good Habits</label>
                 </div></div>
                 <div class="mcq-group"><p>3. My plan for my family is to...</p><div class="mcq-options">
                         <input type="radio" id="q3a" name="q3" value="To respect my parents and be helpful." required><label for="q3a">Respect & Help</label>
@@ -247,6 +247,7 @@
             </footer>
         </div>
     </template>
+    
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         const preloader = document.getElementById('preloader');
@@ -260,13 +261,14 @@
         const submitButton = visionForm.querySelector('button[type="submit"]');
         let capturedImageData = null;
 
+        // CORRECTED ANSWER MAP
         const answerMap = new Map([
             ['To achieve academic excellence.', 'Excellence'], ['To develop practical skills.', 'Skills'], ['To gain in-depth knowledge of my field.', 'Knowledge'], ['To complete my studies with good grades.', 'Grades'],
-            ['Consistent sleep and a healthy diet.', 'Wellness'], ['Regular physical activity and sports.', 'Activity'], ['Mindfulness and stress management.', 'Mindfulness'], ['develop good habits.', 'Good Habits'],
+            ['Consistent sleep and a healthy diet.', 'Wellness'], ['Regular physical activity and sports.', 'Activity'], ['Mindfulness and stress management.', 'Mindfulness'], ['Develop Good Habits', 'Good Habits'],
             ['To respect my parents and be helpful.', 'Respect'], ['To spend quality time with them.', 'Quality Time'], ['To be a supportive family member.', 'Support'], ['To balance family and study time.', 'Balance'],
             ['Creative arts or writing.', 'Creativity'], ['Sports or physical activities.', 'Sports'], ['Technical skills related to my field.', 'Tech Skills'], ['Learning new languages or subjects.', 'Learning'],
             ['Be thankful for my mentors and friends.', 'Thankfulness'], ['Keep a gratitude journal.', 'Journaling'], ['Express thanks to those who help me.', 'Appreciation'], ['Show appreciation for small things.', 'Awareness'],
-            ['Develop a positive and peaceful mindset.', 'Positivity'], ['Practice regular meditation or prayer.', 'Meditation'], ['Visit Holy Place.', 'Pilgrim'], ['Read Holy Book.', 'Read Holy Book']
+            ['Develop a positive and peaceful mindset.', 'Positivity'], ['Practice regular meditation or prayer.', 'Meditation'], ['Visit Holy Place', 'Pilgrimage'], ['Read Holy Book', 'Scripture Reading']
         ]);
 
         emailjs.init({ publicKey: "1PZYtv-MWEaTrQnt-", });
@@ -315,9 +317,9 @@
             document.body.appendChild(visionCardNode);
 
             try {
-                // YOUR CLOUDINARY DETAILS
+                // CORRECTED CLOUDINARY DETAILS
                 const CLOUDINARY_CLOUD_NAME = "duxyrk6vz";
-                const CLOUDINARY_UPLOAD_PRESET = "ignite_preset"; // Assuming you named it 'ignite_preset'
+                const CLOUDINARY_UPLOAD_PRESET = "ignite_preset";
 
                 const canvas = await html2canvas(visionCardNode, { scale: 2, useCORS: true });
                 document.body.removeChild(visionCardNode);
@@ -375,6 +377,4 @@
     });
     </script>
 </body>
-
 </html>
-
