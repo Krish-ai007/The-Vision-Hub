@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Vision ID | Ignite 2025</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            /* Palette */
+            --primary-cyan: #1995AD;
+            --light-blue: #A1D6E2;
+            --off-white: #F1F1F2;
+            --text-dark: #333333;
+            --text-light: #F1F1F2;
+            --font-main: 'Poppins', sans-serif;
+            --font-mono: 'Roboto Mono', monospace;
+        }
+        body {
+            background: var(--light-blue);
+            font-family: var(--font-main);
+            margin: 0; padding: 2rem 1rem;
+            min-height: 100vh;
+            box-sizing: border-box;
+            display: grid;
+            place-items: center;
+        }
+        #passportTemplateContainer { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 2.5rem;
+            width: 100%; 
+            max-width: 380px; /* Max width for screen display */
+        }
+        #visionCard {
+            width: 350px; /* Fixed width for screen display */
+            height: 478px; /* Fixed height for screen display */
+            background: var(--primary-cyan); /* Solid Background Color */
+            color: var(--text-light);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            box-sizing: border-box; 
+            display: flex; 
+            flex-direction: column; 
+            font-family: var(--font-main);
+        }
+        .passport-header-logos {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 50px;
+            margin-bottom: 1rem;
+            /* REMOVED: filter: brightness(0) invert(1); to keep original colors */
+        }
+        .passport-header-logos img { max-height: 100%; }
+        #ppsu-logo-card { height: 40px; }
+        #ignite-logo-card { height: 50px; }
+        .passport-header {
+            display: flex; align-items: center; gap: 1.2rem; text-align: left;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid rgba(241, 241, 242, 0.3);
+            margin-bottom: 1rem;
+        }
+        .passport-photo {
+            width: 85px; height: 85px; border-radius: 12px; object-fit: cover;
+            border: 3px solid var(--off-white);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+        .passport-info h2 { font-size: 1.6rem; margin: 0; font-weight: 700; color: var(--text-light); }
+        .passport-info p { font-size: 0.8rem; margin: 0.4rem 0 0; color: var(--text-light); opacity: 0.9; font-family: var(--font-mono); letter-spacing: 1px; }
+        .passport-body { padding-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem 1rem; flex-grow: 1; }
+        .passport-item h4 {
+            margin: 0 0 0.3rem 0; font-size: 0.7rem; font-weight: 700;
+            color: var(--light-blue); /* Lighter accent for titles */
+            text-transform: uppercase; letter-spacing: 1px;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .passport-item h4 i { font-size: 0.9rem; opacity: 0.8; }
+        .passport-item p { margin: 0; font-size: 1rem; color: var(--text-light); font-weight: 500; }
+        .passport-footer {
+            margin-top: auto; text-align: center; font-family: var(--font-mono); font-size: 0.7rem;
+            color: var(--text-light); opacity: 0.6; padding-top: 1rem;
+            border-top: 1px solid rgba(241, 241, 242, 0.3);
+        }
+        .card-actions { display: flex; justify-content: center; gap: 1.5rem; width: 100%; }
+        .card-actions button {
+            background: var(--off-white);
+            color: var(--primary-cyan); 
+            padding: 0.9rem 1.8rem; border: none; border-radius: 12px; cursor: pointer;
+            font-weight: 600; font-size: 1.05rem;
+            transition: all 0.2s; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .card-actions button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        .print-button {
+            background: transparent !important;
+            border: 2px solid var(--off-white) !important;
+            color: var(--off-white) !important;
+        }
+        .print-button:hover {
+            background: var(--off-white) !important;
+            color: var(--primary-cyan) !important;
+        }
+
+        /* --- 🖨️ PRINT STYLES --- */
+
+        /* Define the paper size for the print job */
+        @page {
+            size: 10.4cm 14.2cm;
+            margin: 0; /* Ensures the card prints to the edges */
+        }
+
+        @media print {
+            body {
+                background: none; /* No background on print */
+                margin: 0;
+                padding: 0;
+                display: block; /* Override flex/grid for printing */
+                width: 100%;
+                height: 100%;
+                overflow: hidden; /* Prevent scrollbars */
+            }
+            .card-actions {
+                display: none; /* Hide action buttons when printing */
+            }
+            #passportTemplateContainer {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+                max-width: none; /* Remove max-width for print */
+                display: block; /* Override flex for printing */
+            }
+
+            #visionCard {
+                width: 10.4cm;
+                height: 14.2cm;
+                margin: 0;
+                border: none;
+                border-radius: 0; /* Sharp corners for print */
+                box-shadow: none;
+                
+                /* Maintain original padding and box-sizing for layout integrity */
+                padding: 1.5rem; /* Match on-screen padding */
+                box-sizing: border-box;
+
+                /* Force the browser to print the background color */
+                background: var(--primary-cyan) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            /* Ensure logos retain their original colors during print */
+            .passport-header-logos {
+                filter: none; /* Remove any filters applied for screen */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="passportTemplateContainer">
+        <div id="visionCard">
+            <div class="passport-header-logos">
+                <img id="ppsu-logo-card" src="PPSUNAACA+Logo.png" alt="PPSU Logo">
+                <img id="ignite-logo-card" src="Ignite_logo2.png" alt="Ignite Logo">
+            </div>
+            <header class="passport-header">
+                <img id="passportPhoto" src="" alt="User's Photo" class="passport-photo">
+                <div class="passport-info">
+                    <h2 id="passportName"></h2>
+                    <p>Enrollment: <span id="passportEnrollment"></span></p>
+                </div>
+            </header>
+            <main class="passport-body">
+                <div class="passport-item"><h4><i class="fa-solid fa-graduation-cap"></i> Education</h4><p id="cardQ1"></p></div>
+                <div class="passport-item"><h4><i class="fa-solid fa-heart-pulse"></i> Health</h4><p id="cardQ2"></p></div>
+                <div class="passport-item"><h4><i class="fa-solid fa-users"></i> Family</h4><p id="cardQ3"></p></div>
+                <div class="passport-item"><h4><i class="fa-solid fa-lightbulb"></i> Skills/Hobby</h4><p id="cardQ4"></p></div>
+                <div class="passport-item"><h4><i class="fa-solid fa-hands-praying"></i> Gratitude</h4><p id="cardQ5"></p></div>
+                <div class="passport-item"><h4><i class="fa-solid fa-seedling"></i> Spiritual</h4><p id="cardQ6"></p></div>
+            </main>
+            <footer class="passport-footer">
+                IGNITE 2025 :: VISION ID
+            </footer>
+        </div>
+        <div class="card-actions">
+            <button id="saveToDeviceBtn"><i class="fas fa-download"></i> Save to Device</button>
+            <button id="printBtn" class="print-button"><i class="fas fa-print"></i> Print</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const visionCard = document.getElementById('visionCard');
+            const saveToDeviceBtn = document.getElementById('saveToDeviceBtn');
+            const printBtn = document.getElementById('printBtn');
+
+            const visionDataString = sessionStorage.getItem('visionData');
+
+            if (!visionDataString) {
+                alert("No Vision ID data found. Please complete the form first.");
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            const visionData = JSON.parse(visionDataString);
+
+            document.getElementById('passportName').innerText = visionData.name;
+            document.getElementById('passportEnrollment').innerText = visionData.enrollment;
+            document.getElementById('passportPhoto').src = visionData.photo;
+            document.getElementById('cardQ1').innerText = visionData.answers.q1;
+            document.getElementById('cardQ2').innerText = visionData.answers.q2;
+            document.getElementById('cardQ3').innerText = visionData.answers.q3;
+            document.getElementById('cardQ4').innerText = visionData.answers.q4;
+            document.getElementById('cardQ5').innerText = visionData.answers.q5;
+            document.getElementById('cardQ6').innerText = visionData.answers.q6;
+
+            saveToDeviceBtn.addEventListener('click', () => {
+                // For saving to device, we still want the high-res capture, so no print-specific styles needed here
+                html2canvas(visionCard, {
+                    scale: 3,
+                    useCORS: true,
+                    backgroundColor: getComputedStyle(visionCard).getPropertyValue('background-color') // Use the actual background
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `Vision-ID-${visionData.name.replace(/\s/g, '-')}.jpeg`;
+                    link.href = canvas.toDataURL('image/jpeg', 0.95);
+                    link.click();
+                });
+            });
+
+            printBtn.addEventListener('click', () => window.print());
+        });
+    </script>
+</body>
+</html>

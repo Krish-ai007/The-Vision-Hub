@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Vision Hub | Ignite 2025</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        :root {
+            --primary-cyan: #1995AD;
+            --light-blue: #A1D6E2;
+            --off-white: #F1F1F2;
+            --text-dark: #333333;
+            --text-light: #F1F1F2;
+            --font-main: 'Poppins', sans-serif;
+            --font-mono: 'Roboto Mono', monospace;
+        }
+        body {
+            background: var(--light-blue);
+            color: var(--text-dark);
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 100px 1rem 2rem 1rem;
+            min-height: 100vh;
+            box-sizing: border-box;
+            display: grid;
+            place-items: center;
+        }
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--light-blue);
+            display: grid; place-items: center; z-index: 9999; opacity: 1; transition: opacity 0.75s ease-out;
+        }
+        #preloader.fade-out { opacity: 0; pointer-events: none; }
+        .logo-container { text-align: center; }
+        .logo-container img { max-width: 90%; width: 250px; height: auto; max-height: 120px; }
+        .loader-text {
+            font-family: var(--font-mono); font-weight: 700; font-size: 2rem; color: var(--primary-cyan);
+            margin-top: 1.5rem; white-space: nowrap; overflow: hidden; border-right: 3px solid var(--primary-cyan);
+            animation: typing 2.5s steps(12, end) forwards, blink 0.75s step-end infinite;
+        }
+        @keyframes typing { from { width: 0; } to { width: 100%; } }
+        @keyframes blink { from, to { border-color: transparent; } 50% { border-color: var(--primary-cyan); } }
+        .container {
+            width: 100%; max-width: 800px;
+            background-color: var(--off-white);
+            padding: 2.5rem; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(20px); transition: opacity 0.5s ease-out 0.5s, transform 0.5s ease-out 0.5s;
+        }
+        .container.show { opacity: 1; transform: translateY(0); }
+        header { text-align: center; margin-bottom: 2rem; }
+        .gradient-text {
+            font-weight: 800; font-size: 2.8rem; margin: 0;
+            color: var(--primary-cyan);
+            line-height: 1.2;
+        }
+        header h3 { font-weight: 500; opacity: 0.8; margin: 0.5rem 0 1rem; color: var(--text-dark); font-size: 1.1rem; }
+        form fieldset { border: none; padding: 0; margin: 0 0 2rem 0; }
+        form legend {
+            font-weight: 700; font-size: 1.4rem; margin-bottom: 1.5rem; width: 100%;
+            padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary-cyan);
+            color: var(--primary-cyan);
+        }
+        .form-group { position: relative; margin-bottom: 1.8rem; }
+        input[type="text"], input[type="tel"], input[type="email"] {
+            width: 100%; background: #fff; border: 1px solid #ddd;
+            color: var(--text-dark); border-radius: 12px; padding: 1.1rem;
+            font-size: 1rem; font-family: var(--font-main); box-sizing: border-box;
+            transition: all 0.2s ease-out;
+        }
+        input[type="text"]:focus, input[type="tel"]:focus, input[type="email"]:focus {
+            border-color: var(--primary-cyan);
+            box-shadow: 0 0 0 3px rgba(25, 149, 173, 0.2);
+            outline: none;
+        }
+        .mcq-options { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .mcq-options label {
+            display: block; background: #fff; border: 1px solid #ddd; border-radius: 12px;
+            padding: 1.2rem; cursor: pointer; transition: all 0.2s ease-out; font-size: 0.95rem;
+            color: var(--text-dark); font-weight: 500; text-align: center;
+        }
+        .mcq-options label:hover {
+            border-color: var(--primary-cyan);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+        .mcq-options input[type="radio"] { display: none; }
+        .mcq-options input[type="radio"]:checked + label {
+            background: var(--primary-cyan);
+            color: var(--text-light); border-color: transparent;
+            box-shadow: 0 6px 20px rgba(25, 149, 173, 0.4);
+            transform: translateY(-4px); font-weight: 600;
+        }
+        .photo-upload-container {
+            display: flex; flex-direction: column; align-items: center; gap: 1.5rem;
+            border: 2px dashed var(--light-blue); border-radius: 15px; padding: 2rem; margin-bottom: 2.5rem;
+            background-color: #f9f9f9;
+        }
+        .photo-preview {
+            width: 130px; height: 130px; border-radius: 50%;
+            border: 5px solid var(--primary-cyan); background-color: #fff;
+            display: grid; place-items: center; overflow: hidden;
+            box-shadow: 0 0 25px rgba(25, 149, 173, 0.2);
+        }
+        .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-buttons button {
+            background: none; border: 1px solid var(--primary-cyan); color: var(--primary-cyan);
+            padding: 0.7rem 1.4rem; border-radius: 10px; cursor: pointer; font-weight: 600;
+            transition: all 0.2s; font-size: 0.95rem;
+        }
+        .photo-buttons button:hover {
+            background: var(--primary-cyan); color: var(--text-light);
+            box-shadow: 0 4px 15px rgba(25, 149, 173, 0.3);
+        }
+        .hidden { display: none; }
+        button[type="submit"] {
+            width: 100%; padding: 1.2rem; font-size: 1.3rem; font-weight: 700;
+            color: var(--text-light); background: var(--primary-cyan);
+            border: none; border-radius: 15px; cursor: pointer; transition: transform 0.2s, box-shadow 0.3s;
+        }
+        button[type="submit"]:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(25, 149, 173, 0.3);
+        }
+        .navbar {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background: var(--off-white);
+            display: flex; justify-content: space-between;
+            align-items: center; padding: 0 2rem; box-sizing: border-box; z-index: 1000; height: 80px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        .navbar img { height: 50px; }
+        .ignite-logo { height: 60px; width: auto; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <img src="PPSUNAACA+Logo.png" alt="University Logo">
+        </div>
+        <div class="nav-right">
+            <img src="Ignite_logo2.png" alt="Ignite 2025 Logo" class="ignite-logo">
+        </div>
+    </nav>
+    <div id="preloader">
+        <div class="logo-container">
+            <img src="PPSUNAACA+Logo.png" alt="P P Savani University Logo">
+            <div class="loader-text">Ignite 2025</div>
+        </div>
+    </div>
+    <main class="container">
+        <header>
+            <h1 class="gradient-text">My Vision ID</h1>
+            <h3>Craft your personal guide for the journey ahead.</h3>
+        </header>
+        <form id="visionForm">
+            <fieldset>
+                <legend>Identity</legend>
+                <div class="photo-upload-container">
+                    <div class="photo-preview">
+                        <span id="photoPreviewPlaceholder" class="photo-preview-placeholder">Upload or take your photo</span>
+                        <img id="photoPreview" src="" alt="Photo Preview" class="hidden">
+                    </div>
+                    <div class="photo-buttons">
+                        <input type="file" id="fileInput" accept="image/*" class="hidden">
+                        <button type="button" id="uploadBtn"><i class="fas fa-upload"></i> Upload</button>
+                        <button type="button" id="cameraBtn"><i class="fas fa-camera"></i> Take Photo</button>
+                    </div>
+                </div>
+                <div class="form-group"><input type="text" id="name" name="name" required placeholder="Full Name"></div>
+                <div class="form-group"><input type="text" id="enrollment" name="enrollment" required placeholder="Enrollment No."></div>
+                <div class="form-group"><input type="email" id="email" name="email" required placeholder="Your Email Address"></div>
+            </fieldset>
+            <fieldset>
+                <legend>Blueprint</legend>
+                <div class="mcq-group"><p>1. My main educational goal is...</p><div class="mcq-options">
+                        <input type="radio" id="q1a" name="q1" value="To achieve academic excellence." required><label for="q1a">Academic Excellence</label>
+                        <input type="radio" id="q1b" name="q1" value="To develop practical skills." required><label for="q1b">Practical Skills</label>
+                        <input type="radio" id="q1c" name="q1" value="To gain in-depth knowledge of my field." required><label for="q1c">In-depth Knowledge</label>
+                        <input type="radio" id="q1d" name="q1" value="To complete my studies with good grades." required><label for="q1d">Good Grades</label>
+                </div></div>
+                <div class="mcq-group"><p>2. To maintain my health, I will prioritize...</p><div class="mcq-options">
+                        <input type="radio" id="q2a" name="q2" value="Consistent sleep and a healthy diet." required><label for="q2a">Sleep & Diet</label>
+                        <input type="radio" id="q2b" name="q2" value="Regular physical activity and sports." required><label for="q2b">Physical Activity</label>
+                        <input type="radio" id="q2c" name="q2" value="Mindfulness and stress management." required><label for="q2c">Mindfulness</label>
+                        <input type="radio" id="q2d" name="q2" value="Regular health check-ups." required><label for="q2d">Check-ups</label>
+                </div></div>
+                <div class="mcq-group"><p>3. My plan for my family is to...</p><div class="mcq-options">
+                        <input type="radio" id="q3a" name="q3" value="To respect my parents and be helpful." required><label for="q3a">Respect & Help</label>
+                        <input type="radio" id="q3b" name="q3" value="To spend quality time with them." required><label for="q3b">Quality Time</label>
+                        <input type="radio" id="q3c" name="q3" value="To be a supportive family member." required><label for="q3c">Be Supportive</label>
+                        <input type="radio" id="q3d" name="q3" value="To balance family and study time." required><label for="q3d">Balanced Time</label>
+                </div></div>
+                <div class="mcq-group"><p>4. I will develop my skills/hobbies in the areas of...</p><div class="mcq-options">
+                        <input type="radio" id="q4a" name="q4" value="Creative arts or writing." required><label for="q4a">Creative Arts</label>
+                        <input type="radio" id="q4b" name="q4" value="Sports or physical activities." required><label for="q4b">Sports</label>
+                        <input type="radio" id="q4c" name="q4" value="Technical skills related to my field." required><label for="q4c">Tech Skills</label>
+                        <input type="radio" id="q4d" name="q4" value="Learning new languages or subjects." required><label for="q4d">New Languages</label>
+                </div></div>
+                <div class="mcq-group"><p>5. To practice gratitude, I will...</p><div class="mcq-options">
+                        <input type="radio" id="q5a" name="q5" value="Be thankful for my mentors and friends." required><label for="q5a">Mentors & Friends</label>
+                        <input type="radio" id="q5b" name="q5" value="Keep a gratitude journal." required><label for="q5b">Journaling</label>
+                        <input type="radio" id="q5c" name="q5" value="Express thanks to those who help me." required><label for="q5c">Express Thanks</label>
+                        <input type="radio" id="q5d" name="q5" value="Show appreciation for small things." required><label for="q5d">Appreciate Small Things</label>
+                </div></div>
+                <div class="mcq-group"><p>6. My spiritual goal is to...</p><div class="mcq-options">
+                        <input type="radio" id="q6a" name="q6" value="Develop a positive and peaceful mindset." required><label for="q6a">Positive Mindset</label>
+                        <input type="radio" id="q6b" name="q6" value="Practice regular meditation or prayer." required><label for="q6b">Meditation/Prayer</label>
+                        <input type="radio" id="q6c" name="q6" value="Find my inner purpose." required><label for="q6c">Find Purpose</label>
+                        <input type="radio" id="q6d" name="q6" value="Connect with a spiritual community." required><label for="q6d">Community</label>
+                </div></div>
+            </fieldset>
+            <button type="submit">Create & Email My Vision ID</button>
+        </form>
+    </main>
+
+    <template id="visionCardTemplate">
+        <div id="visionCard" style="width: 350px; height: 478px; background: #1995AD; color: #F1F1F2; border-radius: 20px; padding: 1.5rem; box-sizing: border-box; display: flex; flex-direction: column; font-family: 'Poppins', sans-serif;">
+            <div class="passport-header-logos" style="display: flex; justify-content: space-between; align-items: center; height: 50px; margin-bottom: 1rem;">
+                <img id="ppsu-logo-card" src="PPSUNAACA+Logo.png" alt="PPSU Logo" style="height: 40px; max-height: 100%;">
+                <img id="ignite-logo-card" src="Ignite_logo2.png" alt="Ignite Logo" style="height: 50px; max-height: 100%;">
+            </div>
+            <header class="passport-header" style="display: flex; align-items: center; gap: 1.2rem; text-align: left; padding-bottom: 1.2rem; border-bottom: 1px solid rgba(241, 241, 242, 0.3); margin-bottom: 1rem;">
+                <img id="passportPhoto" src="" alt="User's Photo" style="width: 85px; height: 85px; border-radius: 12px; object-fit: cover; border: 3px solid #F1F1F2; box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); flex-shrink: 0;">
+                <div class="passport-info">
+                    <h2 id="passportName" style="font-size: 1.6rem; margin: 0; font-weight: 700; color: #F1F1F2;"></h2>
+                    <p style="font-size: 0.8rem; margin: 0.4rem 0 0; color: #F1F1F2; opacity: 0.9; font-family: 'Roboto Mono', monospace; letter-spacing: 1px;">Enrollment: <span id="passportEnrollment"></span></p>
+                </div>
+            </header>
+            <main class="passport-body" style="padding-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem 1rem; flex-grow: 1;">
+                 <div class="passport-item" style="font-size: 1rem; font-weight: 500;"><h4 style="margin: 0 0 0.3rem 0; font-size: 0.7rem; font-weight: 700; color: #A1D6E2; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-graduation-cap" style="font-size: 0.9rem; opacity: 0.8;"></i> Education</h4><p id="cardQ1"></p></div>
+                <div class="passport-item" style="font-size: 1rem; font-weight: 500;"><h4 style="margin: 0 0 0.3rem 0; font-size: 0.7rem; font-weight: 700; color: #A1D6E2; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-heart-pulse" style="font-size: 0.9rem; opacity: 0.8;"></i> Health</h4><p id="cardQ2"></p></div>
+                <div class="passport-item" style="font-size: 1rem; font-weight: 500;"><h4 style="margin: 0 0 0.3rem 0; font-size: 0.7rem; font-weight: 700; color: #A1D6E2; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-users" style="font-size: 0.9rem; opacity: 0.8;"></i> Family</h4><p id="cardQ3"></p></div>
+                <div class="passport-item" style="font-size: 1rem; font-weight: 500;"><h4 style="margin: 0 0 0.3rem 0; font-size: 0.7rem; font-weight: 700; color: #A1D6E2; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-lightbulb" style="font-size: 0.9rem; opacity: 0.8;"></i> Skills/Hobby</h4><p id="cardQ4"></p></div>
+                <div class="passport-item" style="font-size: 1rem; font-weight: 500;"><h4 style="margin: 0 0 0.3rem 0; font-size: 0.7rem; font-weight: 700; color: #A1D6E2; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-hands-praying" style="font-size: 0.9rem; opacity: 0.8;"></i> Gratitude</h4><p id="cardQ5"></p></div>
+                <div class="passport-item" style="font-size: 1rem; font-weight: 500;"><h4 style="margin: 0 0 0.3rem 0; font-size: 0.7rem; font-weight: 700; color: #A1D6E2; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-seedling" style="font-size: 0.9rem; opacity: 0.8;"></i> Spiritual</h4><p id="cardQ6"></p></div>
+            </main>
+            <footer class="passport-footer" style="margin-top: auto; text-align: center; font-family: 'Roboto Mono', monospace; font-size: 0.7rem; color: #F1F1F2; opacity: 0.6; padding-top: 1rem; border-top: 1px solid rgba(241, 241, 242, 0.3);">
+                IGNITE 2025 :: VISION ID
+            </footer>
+        </div>
+    </template>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const preloader = document.getElementById('preloader');
+        const container = document.querySelector('.container');
+        const visionForm = document.getElementById('visionForm');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const cameraBtn = document.getElementById('cameraBtn');
+        const fileInput = document.getElementById('fileInput');
+        const photoPreview = document.getElementById('photoPreview');
+        const photoPreviewPlaceholder = document.getElementById('photoPreviewPlaceholder');
+        const submitButton = visionForm.querySelector('button[type="submit"]');
+        let capturedImageData = null;
+
+        const answerMap = new Map([
+            ['To achieve academic excellence.', 'Excellence'], ['To develop practical skills.', 'Skills'], ['To gain in-depth knowledge of my field.', 'Knowledge'], ['To complete my studies with good grades.', 'Grades'],
+            ['Consistent sleep and a healthy diet.', 'Wellness'], ['Regular physical activity and sports.', 'Activity'], ['Mindfulness and stress management.', 'Mindfulness'], ['Regular health check-ups.', 'Check-ups'],
+            ['To respect my parents and be helpful.', 'Respect'], ['To spend quality time with them.', 'Quality Time'], ['To be a supportive family member.', 'Support'], ['To balance family and study time.', 'Balance'],
+            ['Creative arts or writing.', 'Creativity'], ['Sports or physical activities.', 'Sports'], ['Technical skills related to my field.', 'Tech Skills'], ['Learning new languages or subjects.', 'Learning'],
+            ['Be thankful for my mentors and friends.', 'Thankfulness'], ['Keep a gratitude journal.', 'Journaling'], ['Express thanks to those who help me.', 'Appreciation'], ['Show appreciation for small things.', 'Awareness'],
+            ['Develop a positive and peaceful mindset.', 'Positivity'], ['Practice regular meditation or prayer.', 'Meditation'], ['Find my inner purpose.', 'Purpose'], ['Connect with a spiritual community.', 'Community']
+        ]);
+
+        emailjs.init({ publicKey: "1PZYtv-MWEaTrQnt-", });
+
+        setTimeout(() => {
+            preloader.classList.add('fade-out');
+            container.classList.add('show');
+        }, 2500);
+
+        const handleFile = (file) => {
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => { capturedImageData = e.target.result; photoPreview.src = capturedImageData; photoPreview.classList.remove('hidden'); photoPreviewPlaceholder.classList.add('hidden'); };
+                reader.readAsDataURL(file);
+            }
+        };
+        uploadBtn.addEventListener('click', () => { fileInput.removeAttribute('capture'); fileInput.click(); });
+        cameraBtn.addEventListener('click', () => { fileInput.setAttribute('capture', 'user'); fileInput.click(); });
+        fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+
+        visionForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            const formData = new FormData(visionForm);
+            const data = Object.fromEntries(formData.entries());
+            
+            const answeredQuestions = Array.from(formData.keys()).filter(key => key.startsWith('q')).length;
+            if (!capturedImageData || answeredQuestions < 6) {
+                alert('Please upload a photo and answer all 6 questions.'); return;
+            }
+            
+            submitButton.disabled = true;
+            submitButton.innerText = 'Creating, Uploading & Sending...';
+
+            const shortAnswers = {};
+            for(let i = 1; i <= 6; i++){ const longAnswer = data[`q${i}`]; shortAnswers[`q${i}`] = answerMap.get(longAnswer) || 'N/A'; }
+
+            const template = document.getElementById('visionCardTemplate');
+            const visionCardNode = template.content.cloneNode(true).firstElementChild;
+            
+            visionCardNode.querySelector('#passportName').innerText = data.name;
+            visionCardNode.querySelector('#passportEnrollment').innerText = data.enrollment;
+            visionCardNode.querySelector('#passportPhoto').src = capturedImageData;
+            for(let i = 1; i <= 6; i++) { visionCardNode.querySelector(`#cardQ${i}`).innerText = shortAnswers[`q${i}`]; }
+            
+            document.body.appendChild(visionCardNode);
+
+            try {
+                // YOUR CLOUDINARY DETAILS
+                const CLOUDINARY_CLOUD_NAME = "duxyrk6vz";
+                const CLOUDINARY_UPLOAD_PRESET = "ignite_preset"; // Assuming you named it 'ignite_preset'
+
+                const canvas = await html2canvas(visionCardNode, { scale: 2, useCORS: true });
+                document.body.removeChild(visionCardNode);
+
+                canvas.toBlob(async (blob) => {
+                    const formData = new FormData();
+                    formData.append('file', blob);
+                    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+                    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+
+                    const cloudinaryResponse = await fetch(cloudinaryUrl, {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (!cloudinaryResponse.ok) {
+                        const errorDetails = await cloudinaryResponse.json();
+                        console.error('Cloudinary upload failed:', errorDetails);
+                        throw new Error('Failed to upload image to Cloudinary.');
+                    }
+
+                    const cloudinaryResult = await cloudinaryResponse.json();
+                    const imageUrl = cloudinaryResult.secure_url;
+
+                    const templateParams = {
+                        name: data.name,
+                        to_email: data.email,
+                        vision_id_url: imageUrl,
+                    };
+
+                    await emailjs.send('service_oxexzxo', 'template_o5imkvs', templateParams);
+                    
+                    alert(`✅ Success! A link to your Vision ID has been sent to ${data.email}.`);
+
+                    const visionData = {
+                        name: data.name, enrollment: data.enrollment, photo: capturedImageData, answers: shortAnswers
+                    };
+
+                    sessionStorage.setItem('visionData', JSON.stringify(visionData));
+                    window.location.href = 'template.html';
+
+                }, 'image/jpeg', 0.8);
+
+            } catch (error) {
+                console.error('FAILED...', error);
+                alert(`❌ Error: Could not process your Vision ID. Please check the console.`);
+                submitButton.disabled = false;
+                submitButton.innerText = 'Create & Email My Vision ID';
+                if (document.body.contains(visionCardNode)) {
+                    document.body.removeChild(visionCardNode);
+                }
+            }
+        });
+    });
+    </script>
+</body>
+</html>
